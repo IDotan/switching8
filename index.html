@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <style>
+        body {
+            background-color: gray;
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .space {
+            width: 8vh;
+            height: 8vh;
+            margin: 0.5vh;
+            border: 0.1em solid black;
+            box-sizing: border-box;
+        }
+
+        .red {
+            background-color: red;
+        }
+
+        .blue {
+            background-color: blue;
+        }
+
+        @media screen and (min-width:1024px) {
+            main {
+                flex-direction: row;
+            }
+
+            .space {
+                width: 5vw;
+                height: 5vw;
+                margin: 0.5vw;
+            }
+        }
+    </style>
+    <main>
+        <div class="space red"></div>
+        <div class="space red"></div>
+        <div class="space red"></div>
+        <div class="space red"></div>
+        <div class="space"></div>
+        <div class="space blue"></div>
+        <div class="space blue"></div>
+        <div class="space blue"></div>
+        <div class="space blue"></div>
+    </main>
+    <script>
+        document.querySelectorAll('.red').forEach((div) => {
+            div.addEventListener('click', () => {
+                let s = event.target;
+                let n = event.target.nextElementSibling;
+                if (n.classList == "space") {
+                    n.insertAdjacentElement('afterend', s);
+                } else if (n.nextElementSibling.classList == "space") {
+                    n.nextElementSibling.insertAdjacentElement('afterend', s);
+                    n.nextElementSibling.insertAdjacentElement('afterend', n);
+                };
+            })
+        })
+        document.querySelectorAll('.blue').forEach((div) => {
+            div.addEventListener('click', () => {
+                let s = event.target;
+                let n = event.target.previousElementSibling;
+                if (n.classList == "space") {
+                    n.insertAdjacentElement('beforebegin', s);
+                } else if (n.previousElementSibling.classList == "space") {
+                    n.previousElementSibling.insertAdjacentElement('beforebegin', s);
+                    n.previousElementSibling.insertAdjacentElement('beforebegin', n);
+                };
+            })
+        })
+    </script>
+</body>
+
+</html>
