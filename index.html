@@ -10,19 +10,31 @@
 
 <body>
     <style>
+        :root {
+            --boxs-size: 8vh;
+            --boxs-gap: 0.5vh;
+            --jumpover-time: 0.75s;
+            --animation-top: 0;
+            --animation-right: 0;
+        }
+
         body {
             background-color: gray;
         }
 
-        main {
+        #game_continer {
             display: flex;
             flex-direction: column;
+            width: max-content;
+            height: max-content;
+            margin: auto;
         }
 
         .space {
-            width: 8vh;
-            height: 8vh;
-            margin: 0.5vh;
+            position: relative;
+            width: var(--boxs-size);
+            height: var(--boxs-size);
+            margin: var(--boxs-gap);
             border: 0.1em solid black;
             box-sizing: border-box;
         }
@@ -35,54 +47,249 @@
             background-color: blue;
         }
 
-        @media screen and (min-aspect-ratio:1/1) {
-            main {
-                flex-direction: row;
+        .switch_vertical {
+            animation: switch_vertical_frames var(--jumpover-time) linear forwards;
+        }
+
+        @keyframes switch_vertical_frames {
+            0% {
+                top: 0;
+                right: 0;
             }
 
-            .space {
-                width: 9vw;
-                height: 9vw;
-                margin: 0.5vw;
+            25% {
+                right: var(--animation-right);
+            }
+
+            50% {
+                top: calc(var(--animation-top) / 2);
+            }
+
+            75% {
+                right: var(--animation-right);
+            }
+
+            100% {
+                top: var(--animation-top);
+                right: 0;
+            }
+        }
+
+        .switch_vertical_counter {
+            animation: switch_vertical_counter_frames var(--jumpover-time) linear forwards;
+        }
+
+        @keyframes switch_vertical_counter_frames {
+            0% {
+                top: 0;
+                right: 0;
+            }
+
+            25% {
+                right: calc(var(--animation-right) * (-1));
+            }
+
+            50% {
+                top: calc((var(--animation-top) / 2) * (-1));
+            }
+
+            75% {
+                right: calc(var(--animation-right) * (-1));
+            }
+
+            100% {
+                top: calc(var(--animation-top) * (-1));
+                right: 0;
+            }
+        }
+
+        .switch_horizontal {
+            animation: switch_horizontal_frames var(--jumpover-time) linear forwards;
+        }
+
+        @keyframes switch_horizontal_frames {
+            0% {
+                top: 0;
+                right: 0;
+            }
+
+            25% {
+                top: var(--animation-top);
+            }
+
+            50% {
+                right: calc(var(--animation-right) / 2);
+            }
+
+            75% {
+                top: var(--animation-top);
+            }
+
+            100% {
+                right: var(--animation-right);
+                top: 0;
+            }
+        }
+
+        .switch_horizontal_counter {
+            animation: switch_horizontal_counter_frames var(--jumpover-time) linear forwards;
+        }
+
+        @keyframes switch_horizontal_counter_frames {
+            0% {
+                top: 0;
+                right: 0;
+            }
+
+            25% {
+                top: calc(var(--animation-top) * (-1));
+            }
+
+            50% {
+                right: calc((var(--animation-right) / 2) * (-1));
+            }
+
+            75% {
+                top: calc(var(--animation-top) * (-1));
+            }
+
+            100% {
+                right: calc((var(--animation-right)) * (-1));
+                top: 0;
+            }
+        }
+
+
+        @media screen and (min-aspect-ratio:1/1) {
+            :root {
+                --boxs-size: 9vw;
+                --boxs-gap: 0.5vw;
+            }
+
+            #game_section {
+                display: flex;
+                height: calc(var(--boxs-size) * 3);
+            }
+
+            #game_continer {
+                flex-direction: row;
             }
         }
     </style>
     <main>
-        <div class="space red"></div>
-        <div class="space red"></div>
-        <div class="space red"></div>
-        <div class="space red"></div>
-        <div class="space"></div>
-        <div class="space blue"></div>
-        <div class="space blue"></div>
-        <div class="space blue"></div>
-        <div class="space blue"></div>
+        <section id="game_section">
+            <div id="game_continer">
+                <div class="space red"></div>
+                <div class="space red"></div>
+                <div class="space red"></div>
+                <div class="space red"></div>
+                <div class="space"></div>
+                <div class="space blue"></div>
+                <div class="space blue"></div>
+                <div class="space blue"></div>
+                <div class="space blue"></div>
+            </div>
+        </section>
     </main>
     <script>
+        let animation_time = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--jumpover-time').replace('s', '')) * 1000;
+        let in_move = false;
+
+        function cube_switch(clicked, space, action, horizontal, double = null) {
+            let switch_class = 'switch_vertical';
+            let counter_class = 'switch_vertical_counter';
+            if (horizontal) {
+                switch_class = 'switch_horizontal';
+                counter_class = 'switch_horizontal_counter';
+            }
+            clicked.classList.add(switch_class);
+            space.classList.add(counter_class);
+            if (double) {
+                if (!horizontal) {
+                    let multi = 1.2;
+                    if (action == 'beforebegin') { multi *= (-1) };
+                    document.documentElement.style.setProperty('--animation-right', ((clicked.getBoundingClientRect()['width'] * multi) + 'px'));
+                } else {
+                    document.documentElement.style.setProperty('--animation-right', parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--animation-right')) * 2 + 'px');
+                }
+
+            };
+            setTimeout(() => {
+                clicked.classList.remove(switch_class);
+                space.classList.remove(counter_class);
+                if (!double) {
+                    space.insertAdjacentElement(action, clicked);
+                } else {
+                    space.insertAdjacentElement(action, clicked);
+                    space.insertAdjacentElement(action, double);
+                };
+                in_move = false;
+            }, animation_time);
+        };
+
+        function cube_switch_setup(cube, direction) {
+            if (in_move) { return };
+            let clicked = event.target;
+            let next = event.target.nextElementSibling;
+            let next_next;
+            if (next) { next_next = next.nextElementSibling };
+            let multi = 1;
+            let horizontal = false;
+            if (direction == 'beforebegin') {
+                next = event.target.previousElementSibling;
+                next_next = next.previousElementSibling;
+                multi = -1;
+            };
+            if (getComputedStyle(document.documentElement).getPropertyValue('--boxs-size').includes('vw')) {
+                horizontal = true;
+            }
+
+            if (!horizontal) {
+                document.documentElement.style.setProperty('--animation-right', ((clicked.getBoundingClientRect()['width'] * 0.6 * multi) + 'px'));
+                if (direction == 'afterend') {
+                    document.documentElement.style.setProperty('--animation-top', ((next.getBoundingClientRect()['y'] - clicked.getBoundingClientRect()['y']) + 'px'));
+                } else {
+                    document.documentElement.style.setProperty('--animation-top', (((clicked.getBoundingClientRect()['y'] - next.getBoundingClientRect()['y']) * (-1)) + 'px'));
+                };
+            } else {
+                document.documentElement.style.setProperty('--animation-top', ((clicked.getBoundingClientRect()['width'] * 0.6 * multi) + 'px'));
+                if (direction == 'afterend') {
+                    document.documentElement.style.setProperty('--animation-right', ((clicked.getBoundingClientRect()['x'] - next.getBoundingClientRect()['x']) + 'px'));
+                } else {
+                    document.documentElement.style.setProperty('--animation-right', (((next.getBoundingClientRect()['x'] - clicked.getBoundingClientRect()['x']) * (-1)) + 'px'));
+                };
+            }
+
+
+            if (next.className == "space") {
+                in_move = true;
+                cube_switch(clicked, next, direction, horizontal);
+            } else if (next_next.className == "space") {
+                if (!horizontal) {
+                    document.documentElement.style.setProperty('--animation-top', ((next_next.getBoundingClientRect()['y'] - clicked.getBoundingClientRect()['y']) + 'px'));
+                    if (direction == 'beforebegin') {
+                        document.documentElement.style.setProperty('--animation-top', (((clicked.getBoundingClientRect()['y'] - next_next.getBoundingClientRect()['y']) * (-1)) + 'px'));
+                    };
+                } else {
+                    document.documentElement.style.setProperty('--animation-top', ((clicked.getBoundingClientRect()['width'] * 1.2 * multi) + 'px'));
+                }
+                in_move = true;
+                cube_switch(clicked, next_next, direction, horizontal, next);
+            };
+        }
+
         document.querySelectorAll('.red').forEach((div) => {
             div.addEventListener('click', () => {
-                let s = event.target;
-                let n = event.target.nextElementSibling;
-                if (n.classList == "space") {
-                    n.insertAdjacentElement('afterend', s);
-                } else if (n.nextElementSibling.classList == "space") {
-                    n.nextElementSibling.insertAdjacentElement('afterend', s);
-                    n.nextElementSibling.insertAdjacentElement('afterend', n);
-                };
-            })
-        })
+                cube_switch_setup(event.target, 'afterend');
+            });
+        });
+
         document.querySelectorAll('.blue').forEach((div) => {
             div.addEventListener('click', () => {
-                let s = event.target;
-                let n = event.target.previousElementSibling;
-                if (n.classList == "space") {
-                    n.insertAdjacentElement('beforebegin', s);
-                } else if (n.previousElementSibling.classList == "space") {
-                    n.previousElementSibling.insertAdjacentElement('beforebegin', s);
-                    n.previousElementSibling.insertAdjacentElement('beforebegin', n);
-                };
-            })
-        })
+                cube_switch_setup(event.target, 'beforebegin');
+            });
+        });
+
     </script>
 </body>
 
