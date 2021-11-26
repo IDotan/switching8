@@ -115,6 +115,41 @@
         let in_move = false;
 
         function cube_switch(clicked, space, horizontal, double = null) {
+            function set_position_affected_vals() {
+                if (horizontal) {
+                    pos_offset = (switch_rect['left'] - clicked_rect['right']) / 2;
+                } else {
+                    pos_offset = (switch_rect['top'] - clicked_rect['bottom']) / 2;
+                    rotate_x = '--animation-x-offset';
+                    rotate_y = '--animation-y-offset';
+                    rotate_x_counter = '--animation-x-offset-counter';
+                    rotate_y_counter = '--animation-y-offset-counter';
+                };
+            };
+
+            function set_css_vals() {
+                document.documentElement.style.setProperty(rotate_x, (width / 2) + 'px');
+                document.documentElement.style.setProperty(rotate_y, (pos_offset + width) + 'px');
+                document.documentElement.style.setProperty(rotate_x_counter, (width / 2) + 'px');
+                document.documentElement.style.setProperty(rotate_y_counter, ((pos_offset * (-1)) + 'px'));
+            };
+
+            function switch_implementation() {
+                clicked.classList.add('switch');
+                space.classList.add('switch_counter');
+                setTimeout(() => {
+                    clicked.classList.remove('switch');
+                    space.classList.remove('switch_counter');
+                    if (!double) {
+                        space.insertAdjacentElement('afterend', clicked);
+                    } else {
+                        space.insertAdjacentElement('afterend', clicked);
+                        space.insertAdjacentElement('afterend', double);
+                    };
+                    in_move = false;
+                }, animation_time);
+            }
+
             let clicked_rect = clicked.getBoundingClientRect();
             let width = clicked_rect['width'];
             let switch_rect = space.getBoundingClientRect();
@@ -123,40 +158,31 @@
             let rotate_y = '--animation-x-offset';
             let rotate_x_counter = '--animation-y-offset-counter';
             let rotate_y_counter = '--animation-x-offset-counter';
-            if (horizontal) {
-                pos_offset = (switch_rect['left'] - clicked_rect['right']) / 2;
-            } else {
-                pos_offset = (switch_rect['top'] - clicked_rect['bottom']) / 2;
-                rotate_x = '--animation-x-offset';
-                rotate_y = '--animation-y-offset';
-                rotate_x_counter = '--animation-x-offset-counter';
-                rotate_y_counter = '--animation-y-offset-counter';
-            };
-
-            document.documentElement.style.setProperty(rotate_x, (width / 2) + 'px');
-            document.documentElement.style.setProperty(rotate_y, (pos_offset + width) + 'px');
-            document.documentElement.style.setProperty(rotate_x_counter, (width / 2) + 'px');
-            document.documentElement.style.setProperty(rotate_y_counter, ((pos_offset * (-1)) + 'px'));
-
-            clicked.classList.add('switch');
-            space.classList.add('switch_counter');
-
-            setTimeout(() => {
-                clicked.classList.remove('switch');
-                space.classList.remove('switch_counter');
-                if (!double) {
-                    space.insertAdjacentElement('afterend', clicked);
-                } else {
-                    space.insertAdjacentElement('afterend', clicked);
-                    space.insertAdjacentElement('afterend', double);
-                };
-                in_move = false;
-            }, animation_time);
+            set_position_affected_vals();
+            set_css_vals();
+            switch_implementation();
         };
 
         function cube_switch_setup(cube, direction) {
+            function start_switching() {
+                if (next.className == "space") {
+                    in_move = true;
+                    if (direction == 'afterend') {
+                        cube_switch(cube, next, horizontal);
+                    } else {
+                        cube_switch(next, cube, horizontal);
+                    };
+                } else if (next_next.className == "space") {
+                    in_move = true;
+                    if (direction == 'afterend') {
+                        cube_switch(cube, next_next, horizontal, next);
+                    } else {
+                        cube_switch(next_next, cube, horizontal, next);
+                    };
+                };
+            };
+
             if (in_move) { return };
-            let clicked = cube;
             let next = cube.nextElementSibling;
             let next_next;
             if (next) { next_next = next.nextElementSibling };
@@ -168,24 +194,9 @@
 
             if (getComputedStyle(document.documentElement).getPropertyValue('--boxs-size').includes('vw')) {
                 horizontal = true;
-            }
-
-            if (next.className == "space") {
-                in_move = true;
-                if (direction == 'afterend') {
-                    cube_switch(clicked, next, horizontal);
-                } else {
-                    cube_switch(next, clicked, horizontal);
-                };
-            } else if (next_next.className == "space") {
-                in_move = true;
-                if (direction == 'afterend') {
-                    cube_switch(clicked, next_next, horizontal, next);
-                } else {
-                    cube_switch(next_next, clicked, horizontal, next);
-                };
             };
-        }
+            start_switching();
+        };
 
         document.querySelectorAll('.red').forEach((div) => {
             div.addEventListener('click', () => {
