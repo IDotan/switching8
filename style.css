@@ -1,0 +1,84 @@
+:root {
+    --boxs-size: 8vh;
+    --boxs-gap: 0.5vh;
+    --jumpover-time: 0.75s;
+    --animation-x-offset: 0;
+    --animation-y-offset: 0;
+    --animation-x-offset-counter: 0;
+    --animation-y-offset-counter: 0;
+}
+
+body {
+    background-color: gray;
+}
+
+#game_continer {
+    display: flex;
+    flex-direction: column;
+    width: max-content;
+    height: max-content;
+    margin: auto;
+}
+
+.space {
+    position: relative;
+    width: var(--boxs-size);
+    height: var(--boxs-size);
+    margin: var(--boxs-gap);
+    border: 0.1em solid black;
+    box-sizing: border-box;
+}
+
+.red {
+    background-color: red;
+}
+
+.blue {
+    background-color: blue;
+}
+
+.switch {
+    animation: switch_frames var(--jumpover-time) linear forwards;
+}
+
+@keyframes switch_frames {
+    from {
+        transform-origin: var(--animation-x-offset) var(--animation-y-offset);
+    }
+
+    to {
+        transform-origin: var(--animation-x-offset) var(--animation-y-offset);
+        rotate: 180deg;
+    }
+}
+
+.switch_counter {
+    animation: switch_counter_frames var(--jumpover-time) linear forwards;
+}
+
+@keyframes switch_counter_frames {
+    from {
+        transform-origin: var(--animation-x-offset-counter) var(--animation-y-offset-counter);
+    }
+
+    to {
+        transform-origin: var(--animation-x-offset-counter) var(--animation-y-offset-counter);
+        rotate: 180deg;
+    }
+}
+
+@media screen and (min-aspect-ratio:1/1) {
+    :root {
+        --boxs-size: 9vw;
+        --boxs-gap: 0.5vw;
+    }
+
+    #game_section {
+        display: flex;
+        height: calc(var(--boxs-size) * 3);
+    }
+
+    #game_continer {
+        flex-direction: row;
+    }
+}
