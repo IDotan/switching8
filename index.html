@@ -14,8 +14,10 @@
             --boxs-size: 8vh;
             --boxs-gap: 0.5vh;
             --jumpover-time: 0.75s;
-            --animation-top: 0;
-            --animation-right: 0;
+            --animation-x-offset: 0;
+            --animation-y-offset: 0;
+            --animation-x-offset-counter: 0;
+            --animation-y-offset-counter: 0;
         }
 
         body {
@@ -47,118 +49,35 @@
             background-color: blue;
         }
 
-        .switch_vertical {
-            animation: switch_vertical_frames var(--jumpover-time) linear forwards;
+        .switch {
+            animation: switch_frames var(--jumpover-time) linear forwards;
         }
 
-        @keyframes switch_vertical_frames {
-            0% {
-                top: 0;
-                right: 0;
+        @keyframes switch_frames {
+            from {
+                transform-origin: var(--animation-x-offset) var(--animation-y-offset);
             }
 
-            25% {
-                right: var(--animation-right);
-            }
-
-            50% {
-                top: calc(var(--animation-top) / 2);
-            }
-
-            75% {
-                right: var(--animation-right);
-            }
-
-            100% {
-                top: var(--animation-top);
-                right: 0;
+            to {
+                transform-origin: var(--animation-x-offset) var(--animation-y-offset);
+                rotate: 180deg;
             }
         }
 
-        .switch_vertical_counter {
-            animation: switch_vertical_counter_frames var(--jumpover-time) linear forwards;
+        .switch_counter {
+            animation: switch_counter_frames var(--jumpover-time) linear forwards;
         }
 
-        @keyframes switch_vertical_counter_frames {
-            0% {
-                top: 0;
-                right: 0;
+        @keyframes switch_counter_frames {
+            from {
+                transform-origin: var(--animation-x-offset-counter) var(--animation-y-offset-counter);
             }
 
-            25% {
-                right: calc(var(--animation-right) * (-1));
-            }
-
-            50% {
-                top: calc((var(--animation-top) / 2) * (-1));
-            }
-
-            75% {
-                right: calc(var(--animation-right) * (-1));
-            }
-
-            100% {
-                top: calc(var(--animation-top) * (-1));
-                right: 0;
+            to {
+                transform-origin: var(--animation-x-offset-counter) var(--animation-y-offset-counter);
+                rotate: 180deg;
             }
         }
-
-        .switch_horizontal {
-            animation: switch_horizontal_frames var(--jumpover-time) linear forwards;
-        }
-
-        @keyframes switch_horizontal_frames {
-            0% {
-                top: 0;
-                right: 0;
-            }
-
-            25% {
-                top: var(--animation-top);
-            }
-
-            50% {
-                right: calc(var(--animation-right) / 2);
-            }
-
-            75% {
-                top: var(--animation-top);
-            }
-
-            100% {
-                right: var(--animation-right);
-                top: 0;
-            }
-        }
-
-        .switch_horizontal_counter {
-            animation: switch_horizontal_counter_frames var(--jumpover-time) linear forwards;
-        }
-
-        @keyframes switch_horizontal_counter_frames {
-            0% {
-                top: 0;
-                right: 0;
-            }
-
-            25% {
-                top: calc(var(--animation-top) * (-1));
-            }
-
-            50% {
-                right: calc((var(--animation-right) / 2) * (-1));
-            }
-
-            75% {
-                top: calc(var(--animation-top) * (-1));
-            }
-
-            100% {
-                right: calc((var(--animation-right)) * (-1));
-                top: 0;
-            }
-        }
-
 
         @media screen and (min-aspect-ratio:1/1) {
             :root {
@@ -195,33 +114,41 @@
         let animation_time = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--jumpover-time').replace('s', '')) * 1000;
         let in_move = false;
 
-        function cube_switch(clicked, space, action, horizontal, double = null) {
-            let switch_class = 'switch_vertical';
-            let counter_class = 'switch_vertical_counter';
+        function cube_switch(clicked, space, horizontal, double = null) {
+            let clicked_rect = clicked.getBoundingClientRect();
+            let width = clicked_rect['width'];
+            let switch_rect = space.getBoundingClientRect();
+            let pos_offset;
+            let rotate_x = '--animation-y-offset';
+            let rotate_y = '--animation-x-offset';
+            let rotate_x_counter = '--animation-y-offset-counter';
+            let rotate_y_counter = '--animation-x-offset-counter';
             if (horizontal) {
-                switch_class = 'switch_horizontal';
-                counter_class = 'switch_horizontal_counter';
-            }
-            clicked.classList.add(switch_class);
-            space.classList.add(counter_class);
-            if (double) {
-                if (!horizontal) {
-                    let multi = 1.2;
-                    if (action == 'beforebegin') { multi *= (-1) };
-                    document.documentElement.style.setProperty('--animation-right', ((clicked.getBoundingClientRect()['width'] * multi) + 'px'));
-                } else {
-                    document.documentElement.style.setProperty('--animation-right', parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--animation-right')) * 2 + 'px');
-                }
-
+                pos_offset = (switch_rect['left'] - clicked_rect['right']) / 2;
+            } else {
+                pos_offset = (switch_rect['top'] - clicked_rect['bottom']) / 2;
+                rotate_x = '--animation-x-offset';
+                rotate_y = '--animation-y-offset';
+                rotate_x_counter = '--animation-x-offset-counter';
+                rotate_y_counter = '--animation-y-offset-counter';
             };
+
+            document.documentElement.style.setProperty(rotate_x, (width / 2) + 'px');
+            document.documentElement.style.setProperty(rotate_y, (pos_offset + width) + 'px');
+            document.documentElement.style.setProperty(rotate_x_counter, (width / 2) + 'px');
+            document.documentElement.style.setProperty(rotate_y_counter, ((pos_offset * (-1)) + 'px'));
+
+            clicked.classList.add('switch');
+            space.classList.add('switch_counter');
+
             setTimeout(() => {
-                clicked.classList.remove(switch_class);
-                space.classList.remove(counter_class);
+                clicked.classList.remove('switch');
+                space.classList.remove('switch_counter');
                 if (!double) {
-                    space.insertAdjacentElement(action, clicked);
+                    space.insertAdjacentElement('afterend', clicked);
                 } else {
-                    space.insertAdjacentElement(action, clicked);
-                    space.insertAdjacentElement(action, double);
+                    space.insertAdjacentElement('afterend', clicked);
+                    space.insertAdjacentElement('afterend', double);
                 };
                 in_move = false;
             }, animation_time);
@@ -229,52 +156,34 @@
 
         function cube_switch_setup(cube, direction) {
             if (in_move) { return };
-            let clicked = event.target;
-            let next = event.target.nextElementSibling;
+            let clicked = cube;
+            let next = cube.nextElementSibling;
             let next_next;
             if (next) { next_next = next.nextElementSibling };
-            let multi = 1;
             let horizontal = false;
             if (direction == 'beforebegin') {
-                next = event.target.previousElementSibling;
+                next = cube.previousElementSibling;
                 next_next = next.previousElementSibling;
-                multi = -1;
             };
+
             if (getComputedStyle(document.documentElement).getPropertyValue('--boxs-size').includes('vw')) {
                 horizontal = true;
             }
 
-            if (!horizontal) {
-                document.documentElement.style.setProperty('--animation-right', ((clicked.getBoundingClientRect()['width'] * 0.6 * multi) + 'px'));
-                if (direction == 'afterend') {
-                    document.documentElement.style.setProperty('--animation-top', ((next.getBoundingClientRect()['y'] - clicked.getBoundingClientRect()['y']) + 'px'));
-                } else {
-                    document.documentElement.style.setProperty('--animation-top', (((clicked.getBoundingClientRect()['y'] - next.getBoundingClientRect()['y']) * (-1)) + 'px'));
-                };
-            } else {
-                document.documentElement.style.setProperty('--animation-top', ((clicked.getBoundingClientRect()['width'] * 0.6 * multi) + 'px'));
-                if (direction == 'afterend') {
-                    document.documentElement.style.setProperty('--animation-right', ((clicked.getBoundingClientRect()['x'] - next.getBoundingClientRect()['x']) + 'px'));
-                } else {
-                    document.documentElement.style.setProperty('--animation-right', (((next.getBoundingClientRect()['x'] - clicked.getBoundingClientRect()['x']) * (-1)) + 'px'));
-                };
-            }
-
-
             if (next.className == "space") {
                 in_move = true;
-                cube_switch(clicked, next, direction, horizontal);
-            } else if (next_next.className == "space") {
-                if (!horizontal) {
-                    document.documentElement.style.setProperty('--animation-top', ((next_next.getBoundingClientRect()['y'] - clicked.getBoundingClientRect()['y']) + 'px'));
-                    if (direction == 'beforebegin') {
-                        document.documentElement.style.setProperty('--animation-top', (((clicked.getBoundingClientRect()['y'] - next_next.getBoundingClientRect()['y']) * (-1)) + 'px'));
-                    };
+                if (direction == 'afterend') {
+                    cube_switch(clicked, next, horizontal);
                 } else {
-                    document.documentElement.style.setProperty('--animation-top', ((clicked.getBoundingClientRect()['width'] * 1.2 * multi) + 'px'));
-                }
+                    cube_switch(next, clicked, horizontal);
+                };
+            } else if (next_next.className == "space") {
                 in_move = true;
-                cube_switch(clicked, next_next, direction, horizontal, next);
+                if (direction == 'afterend') {
+                    cube_switch(clicked, next_next, horizontal, next);
+                } else {
+                    cube_switch(next_next, clicked, horizontal, next);
+                };
             };
         }
 
