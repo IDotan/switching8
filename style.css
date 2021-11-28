@@ -9,6 +9,7 @@
 }
 
 body {
+    margin: 0;
     background-color: gray;
 }
 
@@ -67,6 +68,14 @@ body {
     }
 }
 
+#game_controls {
+    display: flex;
+    justify-content: space-evenly;
+    margin: 0 auto;
+    font-size: 3em;
+    padding: 0.2em 0;
+}
+
 @media screen and (min-aspect-ratio:1/1) {
     :root {
         --boxs-size: 9vw;
@@ -80,5 +89,9 @@ body {
 
     #game_continer {
         flex-direction: row;
+    }
+
+    #game_controls {
+        max-width: 35vw;
     }
 }

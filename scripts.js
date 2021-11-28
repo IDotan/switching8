@@ -1,5 +1,6 @@
 let animation_time = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--jumpover-time').replace('s', '')) * 1000;
 let in_move = false;
+let enable_reset = true;
 const HISTORY = [];
 
 /**
@@ -81,7 +82,11 @@ function undo() {
  * Rest the cubes to starting position one action at a time.
  */
 function rest() {
-    if ((HISTORY.length == 0) || in_move) { return };
+    if ((HISTORY.length == 0) || in_move) {
+        enable_reset = true;
+        return;
+    };
+    enable_reset = false;
     document.documentElement.style.setProperty('--jumpover-time', '0.2s');
     animation_time = 200;
     undo();
@@ -168,3 +173,6 @@ function add_cubes() {
 };
 
 add_cubes();
+
+document.getElementById('undo_btn').addEventListener('click', undo);
+document.getElementById('reset_btn').addEventListener('click', () => { if (enable_reset) { rest() }; });
