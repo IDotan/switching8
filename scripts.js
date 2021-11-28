@@ -1,5 +1,6 @@
 let animation_time = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--jumpover-time').replace('s', '')) * 1000;
 let in_move = false;
+const HISTORY = [];
 
 /**
  * Switch the 2 given cubes in animaition and DOM position.
@@ -7,7 +8,7 @@ let in_move = false;
  * @param {HTMLElement} first_cube cube to switch
  * @param {HTMLElement} secend_cube cube to switch
  * @param {Boolean} horizontal true when the game is showing horizontaly
- * @param {HTMLElement} double center cube to switch around
+ * @param {HTMLElement} double center cube to switch around, null when the cubes are next to each other
  */
 function cube_switch(first_cube, secend_cube, horizontal, double = null) {
     /**
@@ -68,13 +69,22 @@ function cube_switch(first_cube, secend_cube, horizontal, double = null) {
 };
 
 /**
+ * Undo the latest action in HISTORY.
+ */
+function undo() {
+    if ((HISTORY.length == 0) || in_move) { return };
+    let action = HISTORY.pop();
+    action[1] == 'afterend' ? cube_switch_setup(action[0], 'beforebegin', true) : cube_switch_setup(action[0], 'afterend', true);
+};
+
+/**
  * Set up the needed values for the switch and call the swiching function.
  * 
  * @param {HTMLElement} cube the clicked cube.
  * @param {String} direction afterend || beforebegin for what action to take.
- * @returns 
+ * @param {boolean} redo true when its a redo to not save to HISTORY, default false
  */
-function cube_switch_setup(cube, direction) {
+function cube_switch_setup(cube, direction, redo = false) {
     /**
      * Call the switching function with the correct values according to the clicked cube.
      */
@@ -109,6 +119,7 @@ function cube_switch_setup(cube, direction) {
     if (getComputedStyle(document.documentElement).getPropertyValue('--boxs-size').includes('vw')) {
         horizontal = true;
     };
+    if (!redo) { HISTORY.push([cube, direction]) };
     start_switching();
 };
 
