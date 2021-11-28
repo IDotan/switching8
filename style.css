@@ -49,7 +49,7 @@ body {
 
     to {
         transform-origin: var(--animation-x-offset) var(--animation-y-offset);
-        rotate: 180deg;
+        transform: rotate(180deg);
     }
 }
 
@@ -64,7 +64,7 @@ body {
 
     to {
         transform-origin: var(--animation-x-offset-counter) var(--animation-y-offset-counter);
-        rotate: 180deg;
+        transform: rotate(180deg);
     }
 }
 
