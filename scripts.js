@@ -1,6 +1,6 @@
 let animation_time = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--jumpover-time').replace('s', '')) * 1000;
 let in_move = false;
-let enable_btn = true;
+let enable_input = true;
 const HISTORY = [];
 
 /**
@@ -81,10 +81,10 @@ function undo() {
  * Click handeler for the undo button.
  */
 function undo_click_handeler() {
-    if ((HISTORY.length == 0) || in_move || !enable_btn) { return };
-    enable_btn = false;
+    if ((HISTORY.length == 0) || in_move || !enable_input) { return };
+    enable_input = false;
     undo();
-    enable_btn = true;
+    enable_input = true;
 };
 
 /**
@@ -98,11 +98,11 @@ function rest() {
         if (HISTORY.length == 0) {
             document.documentElement.style.setProperty('--jumpover-time', '0.75s');
             animation_time = 750;
-            enable_btn = true;
+            enable_input = true;
             return;
         };
         if (in_move) {
-            setTimeout(reset_recursion, 100)
+            setTimeout(reset_recursion, 100);
         } else {
             undo();
             setTimeout(() => {
@@ -111,9 +111,8 @@ function rest() {
         };
     };
 
-    if (!enable_btn) { return }
-    if ((HISTORY.length == 0) || in_move) { return; };
-    enable_btn = false;
+    if (!enable_input || (HISTORY.length == 0) || in_move) { return; };
+    enable_input = false;
     document.documentElement.style.setProperty('--jumpover-time', '0.2s');
     animation_time = 200;
     reset_recursion();
@@ -182,7 +181,7 @@ function add_cubes() {
             div.classList = class_name;
             if (event_action) {
                 div.addEventListener('click', (event) => {
-                    cube_switch_setup(event.target, event_action);
+                    if (enable_input) { cube_switch_setup(event.target, event_action); };
                 });
             };
             continer.appendChild(div);
@@ -196,5 +195,5 @@ function add_cubes() {
 
 add_cubes();
 
-document.getElementById('undo_btn').addEventListener('click', () => { if (enable_btn) { undo_click_handeler() }; });
-document.getElementById('reset_btn').addEventListener('click', () => { if (enable_btn) { rest() }; });
+document.getElementById('undo_btn').addEventListener('click', () => { if (enable_input) { undo_click_handeler() }; });
+document.getElementById('reset_btn').addEventListener('click', () => { if (enable_input) { rest() }; });
