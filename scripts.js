@@ -73,10 +73,17 @@ function cube_switch(first_cube, secend_cube, horizontal, double = null) {
  * Undo the latest action in HISTORY.
  */
 function undo() {
-    if ((HISTORY.length == 0) || in_move) { return };
-    enable_btn = false;
     let action = HISTORY.pop();
     action[1] == 'afterend' ? cube_switch_setup(action[0], 'beforebegin', true) : cube_switch_setup(action[0], 'afterend', true);
+};
+
+/**
+ * Click handeler for the undo button.
+ */
+function undo_click_handeler() {
+    if ((HISTORY.length == 0) || in_move || !enable_btn) { return };
+    enable_btn = false;
+    undo();
     enable_btn = true;
 };
 
@@ -84,20 +91,32 @@ function undo() {
  * Rest the cubes to starting position one action at a time.
  */
 function rest() {
-    if (!enable_btn) { return }
-    if ((HISTORY.length == 0) || in_move) {
-        enable_btn = true;
-        return;
+    /**
+     * Recursion function to go over all the history steps.
+     */
+    function reset_recursion() {
+        if (HISTORY.length == 0) {
+            document.documentElement.style.setProperty('--jumpover-time', '0.75s');
+            animation_time = 750;
+            enable_btn = true;
+            return;
+        };
+        if (in_move) {
+            setTimeout(reset_recursion, 100)
+        } else {
+            undo();
+            setTimeout(() => {
+                reset_recursion();
+            }, animation_time);
+        };
     };
+
+    if (!enable_btn) { return }
+    if ((HISTORY.length == 0) || in_move) { return; };
     enable_btn = false;
     document.documentElement.style.setProperty('--jumpover-time', '0.2s');
     animation_time = 200;
-    undo();
-    setTimeout(() => {
-        document.documentElement.style.setProperty('--jumpover-time', '0.75s');
-        animation_time = 750;
-        rest();
-    }, animation_time);
+    reset_recursion();
 };
 
 /**
@@ -136,7 +155,7 @@ function cube_switch_setup(cube, direction, redo = false) {
     let horizontal = false;
     if (direction == 'beforebegin') {
         next = cube.previousElementSibling;
-        next_next = next.previousElementSibling;
+        if (next) { next_next = next.previousElementSibling; };
     };
 
     if (getComputedStyle(document.documentElement).getPropertyValue('--boxs-size').includes('vw')) {
@@ -177,5 +196,5 @@ function add_cubes() {
 
 add_cubes();
 
-document.getElementById('undo_btn').addEventListener('click', () => { if (enable_btn) { undo() }; });
+document.getElementById('undo_btn').addEventListener('click', () => { if (enable_btn) { undo_click_handeler() }; });
 document.getElementById('reset_btn').addEventListener('click', () => { if (enable_btn) { rest() }; });
