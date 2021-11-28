@@ -78,6 +78,21 @@ function undo() {
 };
 
 /**
+ * Rest the cubes to starting position one action at a time.
+ */
+function rest() {
+    if ((HISTORY.length == 0) || in_move) { return };
+    document.documentElement.style.setProperty('--jumpover-time', '0.2s');
+    animation_time = 200;
+    undo();
+    setTimeout(() => {
+        document.documentElement.style.setProperty('--jumpover-time', '0.75s');
+        animation_time = 750;
+        rest();
+    }, animation_time);
+};
+
+/**
  * Set up the needed values for the switch and call the swiching function.
  * 
  * @param {HTMLElement} cube the clicked cube.
