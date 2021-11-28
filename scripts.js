@@ -1,6 +1,6 @@
 let animation_time = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--jumpover-time').replace('s', '')) * 1000;
 let in_move = false;
-let enable_reset = true;
+let enable_btn = true;
 const HISTORY = [];
 
 /**
@@ -74,19 +74,22 @@ function cube_switch(first_cube, secend_cube, horizontal, double = null) {
  */
 function undo() {
     if ((HISTORY.length == 0) || in_move) { return };
+    enable_btn = false;
     let action = HISTORY.pop();
     action[1] == 'afterend' ? cube_switch_setup(action[0], 'beforebegin', true) : cube_switch_setup(action[0], 'afterend', true);
+    enable_btn = true;
 };
 
 /**
  * Rest the cubes to starting position one action at a time.
  */
 function rest() {
+    if (!enable_btn) { return }
     if ((HISTORY.length == 0) || in_move) {
-        enable_reset = true;
+        enable_btn = true;
         return;
     };
-    enable_reset = false;
+    enable_btn = false;
     document.documentElement.style.setProperty('--jumpover-time', '0.2s');
     animation_time = 200;
     undo();
@@ -174,5 +177,5 @@ function add_cubes() {
 
 add_cubes();
 
-document.getElementById('undo_btn').addEventListener('click', undo);
-document.getElementById('reset_btn').addEventListener('click', () => { if (enable_reset) { rest() }; });
+document.getElementById('undo_btn').addEventListener('click', () => { if (enable_btn) { undo() }; });
+document.getElementById('reset_btn').addEventListener('click', () => { if (enable_btn) { rest() }; });
