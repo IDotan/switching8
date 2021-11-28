@@ -84,7 +84,7 @@ function undo_click_handeler() {
     if ((HISTORY.length == 0) || in_move || !enable_input) { return };
     enable_input = false;
     undo();
-    enable_input = true;
+    setTimeout(() => { enable_input = true }, animation_time);
 };
 
 /**
@@ -130,14 +130,14 @@ function cube_switch_setup(cube, direction, redo = false) {
      * Call the switching function with the correct values according to the clicked cube.
      */
     function start_switching() {
-        if (next.className == "space") {
+        if (next != null && next.className == "space") {
             in_move = true;
             if (direction == 'afterend') {
                 cube_switch(cube, next, horizontal);
             } else {
                 cube_switch(next, cube, horizontal);
             };
-        } else if (next_next.className == "space") {
+        } else if (next_next != null && (next_next.className == "space")) {
             in_move = true;
             if (direction == 'afterend') {
                 cube_switch(cube, next_next, horizontal, next);
@@ -154,6 +154,7 @@ function cube_switch_setup(cube, direction, redo = false) {
     let horizontal = false;
     if (direction == 'beforebegin') {
         next = cube.previousElementSibling;
+        next_next = null;
         if (next) { next_next = next.previousElementSibling; };
     };
 
