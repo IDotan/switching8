@@ -136,6 +136,8 @@ body {
 }
 
 #info_warper>span {
+    position: absolute;
+    top: 0;
     width: max-content;
     align-self: end;
     cursor: pointer;
