@@ -105,11 +105,15 @@ body {
 #info {
     position: fixed;
     z-index: var(--popup-z-index);
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
 }
 
 #info::before {
     content: '';
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     width: 100vw;
@@ -120,7 +124,7 @@ body {
 
 
 #info_warper {
-    position: fixed;
+    position: relative;
     max-height: 80vh;
     top: 50%;
     left: 50%;
@@ -134,7 +138,7 @@ body {
     flex-direction: column;
     font-size: var(--info-font);
     text-align: center;
-    box-sizing: border-box;
+    overflow: auto;
 }
 
 #info_warper>span {
