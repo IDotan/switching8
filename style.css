@@ -134,6 +134,7 @@ body {
     flex-direction: column;
     font-size: var(--info-font);
     text-align: center;
+    box-sizing: border-box;
 }
 
 #info_warper>span {
