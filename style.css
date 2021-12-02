@@ -6,11 +6,17 @@
     --animation-y-offset: 0;
     --animation-x-offset-counter: 0;
     --animation-y-offset-counter: 0;
+    --popup-z-index: 10;
+    --info-font: 1.5em;
 }
 
 body {
     margin: 0;
-    background-color: gray;
+    background-color: #a2a2a2;
+}
+
+#game_section {
+    margin-top: 0.5em;
 }
 
 #game_continer {
@@ -76,13 +82,71 @@ body {
     padding: 0.2em 0;
 }
 
+#game_controls>div {
+    cursor: pointer;
+}
+
+#info {
+    position: fixed;
+    z-index: var(--popup-z-index);
+}
+
+#info::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #000;
+    opacity: 0.7;
+}
+
+
+#info_warper {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80vw;
+    max-width: 600px;
+    background-color: #507ba8;
+    padding: 1em;
+    border-radius: 2em;
+    display: flex;
+    flex-direction: column;
+    font-size: var(--info-font);
+    text-align: center;
+}
+
+#info_warper>span {
+    width: max-content;
+    align-self: end;
+    cursor: pointer;
+    font-size: 1.5em;
+}
+
+#info_warper>h1 {
+    margin: 0;
+}
+
+#creater_link {
+    margin: 0;
+    font-style: italic;
+}
+
+.close {
+    display: none;
+}
+
 @media screen and (min-aspect-ratio:1/1) {
     :root {
         --boxs-size: 9vw;
         --boxs-gap: 0.5vw;
+        --info-font: 2em;
     }
 
-    #game_section {
+    #game_warper {
         display: flex;
         height: calc(var(--boxs-size) * 3);
     }

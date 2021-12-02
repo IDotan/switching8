@@ -3,6 +3,10 @@ let in_move = false;
 let enable_input = true;
 const HISTORY = [];
 
+function toggle_info_popup() {
+    document.getElementById('info').classList.toggle('close')
+}
+
 /**
  * Switch the 2 given cubes in animaition and DOM position.
  * 
@@ -96,8 +100,8 @@ function rest() {
      */
     function reset_recursion() {
         if (HISTORY.length == 0) {
-            document.documentElement.style.setProperty('--jumpover-time', '0.75s');
-            animation_time = 750;
+            document.documentElement.style.setProperty('--jumpover-time', (normal_speed / 1000 + 's'));
+            animation_time = normal_speed;
             enable_input = true;
             return;
         };
@@ -113,6 +117,7 @@ function rest() {
 
     if (!enable_input || (HISTORY.length == 0) || in_move) { return; };
     enable_input = false;
+    const normal_speed = animation_time;
     document.documentElement.style.setProperty('--jumpover-time', '0.2s');
     animation_time = 200;
     reset_recursion();
@@ -198,3 +203,4 @@ add_cubes();
 
 document.getElementById('undo_btn').addEventListener('click', () => { if (enable_input) { undo_click_handeler() }; });
 document.getElementById('reset_btn').addEventListener('click', () => { if (enable_input) { rest() }; });
+['info_btn', 'close_wraper'].forEach((btn) => { document.getElementById(btn).addEventListener('click', toggle_info_popup); });
