@@ -3,10 +3,6 @@ let in_move = false;
 let enable_input = true;
 const HISTORY = [];
 
-function toggle_info_popup() {
-    document.getElementById('info').classList.toggle('close')
-}
-
 /**
  * Switch the 2 given cubes in animaition and DOM position.
  * 
@@ -203,4 +199,5 @@ add_cubes();
 
 document.getElementById('undo_btn').addEventListener('click', () => { if (enable_input) { undo_click_handeler() }; });
 document.getElementById('reset_btn').addEventListener('click', () => { if (enable_input) { rest() }; });
-['info_btn', 'close_wraper'].forEach((btn) => { document.getElementById(btn).addEventListener('click', toggle_info_popup); });
+['info_btn', 'close_wraper'].forEach((btn) => { document.getElementById(btn).addEventListener('click', () => { document.getElementById('info').classList.toggle('close') }); });
+window.addEventListener('keydown', (e) => { if (e.code == 'Escape') { document.getElementById('info').classList.add('close') } });

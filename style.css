@@ -1,4 +1,7 @@
 :root {
+    --cube-color-1: red;
+    --cube-color-2: blue;
+    --gradient-direction: 0deg;
     --boxs-size: 8vh;
     --boxs-gap: 0.5vh;
     --jumpover-time: 0.75s;
@@ -21,11 +24,23 @@ body {
 }
 
 #game_continer {
+    position: relative;
     display: flex;
     flex-direction: column;
     width: max-content;
     height: max-content;
     margin: auto;
+}
+
+#game_continer::before {
+    content: '';
+    position: absolute;
+    height: 100%;
+    width: 30%;
+    left: 50%;
+    transform: translate(-50%, 0);
+    background: linear-gradient(var(--gradient-direction), var(--cube-color-1), transparent, var(--cube-color-2));
+    border-radius: 0.5em;
 }
 
 .space {
@@ -38,11 +53,11 @@ body {
 }
 
 .red {
-    background-color: red;
+    background-color: var(--cube-color-1);
 }
 
 .blue {
-    background-color: blue;
+    background-color: var(--cube-color-2);
 }
 
 .switch {
@@ -142,9 +157,17 @@ body {
 
 @media screen and (min-aspect-ratio:1/1) {
     :root {
+        --gradient-direction: -90deg;
         --boxs-size: 9vw;
         --boxs-gap: 0.5vw;
-        --info-font: 2em;
+    }
+
+    #game_continer::before {
+        height: 20%;
+        width: 100%;
+        top: 50%;
+        left: 0;
+        transform: translate(0, -50%);
     }
 
     #game_warper {
@@ -158,5 +181,11 @@ body {
 
     #game_controls {
         max-width: 35vw;
+    }
+}
+
+@media screen and (min-width:1024px) {
+    :root {
+        --info-font: 2em;
     }
 }
