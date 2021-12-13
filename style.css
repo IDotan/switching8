@@ -2,8 +2,8 @@
     --cube-color-1: red;
     --cube-color-2: blue;
     --gradient-direction: 0deg;
-    --boxs-size: 8vh;
-    --boxs-gap: 0.5vh;
+    --boxs-size: 8vmax;
+    --boxs-gap: 0.5vmax;
     --jumpover-time: 0.75s;
     --animation-x-offset: 0;
     --animation-y-offset: 0;
@@ -166,8 +166,6 @@ body {
 @media screen and (min-aspect-ratio:1/1) {
     :root {
         --gradient-direction: -90deg;
-        --boxs-size: 9vw;
-        --boxs-gap: 0.5vw;
     }
 
     #game_continer::before {

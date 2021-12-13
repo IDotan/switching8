@@ -159,7 +159,7 @@ function cube_switch_setup(cube, direction, redo = false) {
         if (next) { next_next = next.previousElementSibling; };
     };
 
-    if (getComputedStyle(document.documentElement).getPropertyValue('--boxs-size').includes('vw')) {
+    if (window.innerWidth >= window.innerHeight) {
         horizontal = true;
     };
     if (!redo) { HISTORY.push([cube, direction]) };
